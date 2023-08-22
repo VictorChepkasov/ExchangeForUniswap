@@ -39,6 +39,11 @@ networks:
     subscription_id: 1562
     verify: false
     vrf_coordinator: "0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D"
+  sepolia:
+    id: sepolia
+    chainid: 0xB9a459a00855B0b82337E692D078d7292609701C
+    explorer: https://api-sepolia.etherscan.io/api
+    host: https://sepolia.infura.io/v3/7b9e6a8cf2f64b1c8135a24b16473b27
   mumbai:
     eth_usd_price_feed: "0x0715A7794a1dc8e42615F059dD6e406A6594651A"
     fee: 1000000000000000000
