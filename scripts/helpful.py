@@ -18,7 +18,7 @@ def wrapETH(_from, amount_gwei):
         'value': f'{amount_gwei} gwei',
         'priority_fee': '10 wei'
     }).wait(1)
-    print(f'{amount_gwei} successful wrapped!')
+    print(f'{amount_gwei} ethers successful wrapped!')
 
 def balanceOf(_from, token):
     balance = token.balanceOf(_from, {

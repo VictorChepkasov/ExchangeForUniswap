@@ -6,18 +6,14 @@ import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
 contract GeneralSwap {
     ISwapRouter public immutable swapRouter;
-    address public tokenTo;
-    address public tokenFrom;
     uint24 public constant feeTier = 3000;
 
-    constructor(ISwapRouter _swapRouter, address _tokenTo, address _tokenFrom) {
+    constructor(ISwapRouter _swapRouter) {
         swapRouter = _swapRouter;
-        tokenTo = _tokenTo;
-        tokenFrom = _tokenFrom;
     }
 
     // amountIn in wei (1*10^18)
-    function swapTokens(uint amountIn) external returns (uint256 amountOut) {
+    function swapTokens(uint amountIn, address tokenTo, address tokenFrom) external returns (uint256 amountOut) {
         // отправка токенов на этот контракт
         TransferHelper.safeTransferFrom(tokenTo, msg.sender, address(this), amountIn);
         // разрешение маршрутизатору тратить токены

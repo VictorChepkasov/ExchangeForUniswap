@@ -9,12 +9,12 @@ from scripts.helpful import (
 )
 
 @pytest.fixture(scope='session')
-def generalSwap(user, tokens):
-    print(f'Swap {getSymbol(user, tokens[0])} for {getSymbol(user, tokens[1])}')
-    return deployGeneralSwap(user, tokens[0].address, tokens[1].address)
+def generalSwap(user):
+    return deployGeneralSwap(user)
 
 def test_swap(user, generalSwap, tokens, amount=10):
     tokenTo, tokenFrom = tokens
+    print(f'Swap {getSymbol(user, tokenTo)} for {getSymbol(user, tokenFrom)}')
     # connect to WETH and wrap some eth
     wrapETH(user, amount+1)
     # get DAI balance
@@ -22,6 +22,6 @@ def test_swap(user, generalSwap, tokens, amount=10):
     # approve
     approve(user, amount, tokenTo)
     # swap tokens
-    swapTokens(user, amount-2)
+    swapTokens(user, amount-2, tokenTo.address, tokenFrom.address)
     DAIBalanceAfter = balanceOf(user, tokenFrom)
     assert DAIBalanceBefore < DAIBalanceAfter
