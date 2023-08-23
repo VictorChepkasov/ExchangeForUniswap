@@ -4,27 +4,28 @@ pragma solidity ^0.8.0;
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 
-contract SimpleSwap {
+contract GeneralSwap {
     ISwapRouter public immutable swapRouter;
-    // 1inch = 0x111111111117dC0aa78b770fA6A738034120C302 
-    address public constant DAI = 0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36;
-    address public constant WETH9 = 0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6;
+    address public tokenTo;
+    address public tokenFrom;
     uint24 public constant feeTier = 3000;
 
-    constructor(ISwapRouter _swapRouter) {
+    constructor(ISwapRouter _swapRouter, address _tokenTo, address _tokenFrom) {
         swapRouter = _swapRouter;
+        tokenTo = _tokenTo;
+        tokenFrom = _tokenFrom;
     }
 
     // amountIn in wei (1*10^18)
-    function swapWETHForDAI(uint amountIn) external returns (uint256 amountOut) {
+    function swapTokens(uint amountIn) external returns (uint256 amountOut) {
         // отправка токенов на этот контракт
-        TransferHelper.safeTransferFrom(WETH9, msg.sender, address(this), amountIn);
+        TransferHelper.safeTransferFrom(tokenTo, msg.sender, address(this), amountIn);
         // разрешение маршрутизатору тратить токены
-        TransferHelper.safeApprove(WETH9, address(swapRouter), amountIn);
+        TransferHelper.safeApprove(tokenTo, address(swapRouter), amountIn);
         ISwapRouter.ExactInputSingleParams memory params = 
         ISwapRouter.ExactInputSingleParams({
-            tokenIn: WETH9,
-            tokenOut: DAI,
+            tokenIn: tokenTo,
+            tokenOut: tokenFrom,
             fee: feeTier,
             recipient: msg.sender,
             deadline: block.timestamp,

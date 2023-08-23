@@ -1,4 +1,4 @@
-from brownie import SimpleSwap, Contract, accounts
+from brownie import GeneralSwap, Contract, accounts
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,18 +11,32 @@ load_dotenv()
 
 # адреса goerli
 WETHAddress = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
-DAIAddress = "0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36"
+tokenTo = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
+tokenFrom = "0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36"
 swapRouterAddress = "0xE592427A0AEce92De3Edee1F18E0157C05861564"
 
 def main():
     deploySimpleSwap(accounts[0])
 
-def deploySimpleSwap(_from):
-    deployed = SimpleSwap.deploy(swapRouterAddress, {
+# def getToken(tokenAddress):
+#     return Contract.from_explorer(tokenAddress)
+
+def getSymbol(_from, tokenAddress):
+    token = Contract.from_explorer(tokenAddress)
+    return token.symbol({
+        'from': _from,
+        'priority_fee': '10 wei'
+    })
+
+def deploySimpleSwap(_from, _tokenToAddress, _tokenFromAddress):
+    deployed = GeneralSwap.deploy(swapRouterAddress, _tokenToAddress, _tokenFromAddress, {
         'from': _from,
         'priority_fee': '10 wei'
     }, publish_source=True)
-    print('SimpleSwap successful deployed!')
+    print(f'''
+          GeneralSwap successful deployed!
+          Swap {getSymbol(_from, _tokenToAddress)} for {getSymbol(_from, _tokenFromAddress)}
+          ''')
     return deployed 
 
 def wrapETH(_from, amount_gwei):
@@ -34,25 +48,25 @@ def wrapETH(_from, amount_gwei):
     }).wait(1)
     print(f'{amount_gwei} successful wrapped!')
 
-def DAIBalance(_from):
-    dai = Contract.from_explorer(DAIAddress)
-    balance = dai.balanceOf(_from, {
+def balanceOf(_from, tokenAddress):
+    token = Contract.from_explorer(tokenAddress)
+    balance = token.balanceOf(_from, {
         'from': _from,
         'priority_fee': '10 wei'
     })
-    print(f'Balance DAI: {balance}')
+    print(f'Balance {getSymbol(_from, tokenAddress)}: {balance}')
     return balance
 
-def approve(_from, amount_gwei):
-    weth = Contract.from_explorer(WETHAddress)
-    weth.approve(SimpleSwap[-1].address, f'{amount_gwei} gwei', {
+def approve(_from, amount_gwei, tokenTo):
+    token = Contract.from_explorer(tokenTo)
+    token.approve(GeneralSwap[-1].address, f'{amount_gwei} gwei', {
         'from': _from,
         'priority_fee': '10 wei'
     })
-    print(f'Approved SimpleSwap use {amount_gwei} gwei!')
+    print(f'Approved GeneralSwap use {amount_gwei} gwei!')
 
 def swapTokens(_from, amount):
-    SimpleSwap[-1].swapWETHForDAI(amount, {
+    GeneralSwap[-1].swapTokens(amount, {
         'from': _from,
         'priority_fee': '2 gwei'
     }).wait(1)
