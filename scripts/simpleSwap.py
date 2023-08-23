@@ -10,33 +10,29 @@ load_dotenv()
 # DAIAddress = "0x3e622317f8C93f7328350cF0B56d9eD4C620C5d6"
 
 # адреса goerli
+# tokenToAddress = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
+# tokenFromAddress = "0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36"
 WETHAddress = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
-tokenTo = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
-tokenFrom = "0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36"
 swapRouterAddress = "0xE592427A0AEce92De3Edee1F18E0157C05861564"
 
 def main():
-    deploySimpleSwap(accounts[0])
+    deployGeneralSwap(accounts[0])
 
-# def getToken(tokenAddress):
-#     return Contract.from_explorer(tokenAddress)
+def getToken(tokenAddress):
+    return Contract.from_explorer(tokenAddress)
 
-def getSymbol(_from, tokenAddress):
-    token = Contract.from_explorer(tokenAddress)
+def getSymbol(_from, token):
     return token.symbol({
         'from': _from,
         'priority_fee': '10 wei'
     })
 
-def deploySimpleSwap(_from, _tokenToAddress, _tokenFromAddress):
+def deployGeneralSwap(_from, _tokenToAddress, _tokenFromAddress):
     deployed = GeneralSwap.deploy(swapRouterAddress, _tokenToAddress, _tokenFromAddress, {
         'from': _from,
         'priority_fee': '10 wei'
     }, publish_source=True)
-    print(f'''
-          GeneralSwap successful deployed!
-          Swap {getSymbol(_from, _tokenToAddress)} for {getSymbol(_from, _tokenFromAddress)}
-          ''')
+    print(f'GeneralSwap successful deployed!')
     return deployed 
 
 def wrapETH(_from, amount_gwei):
@@ -48,18 +44,16 @@ def wrapETH(_from, amount_gwei):
     }).wait(1)
     print(f'{amount_gwei} successful wrapped!')
 
-def balanceOf(_from, tokenAddress):
-    token = Contract.from_explorer(tokenAddress)
+def balanceOf(_from, token):
     balance = token.balanceOf(_from, {
         'from': _from,
         'priority_fee': '10 wei'
     })
-    print(f'Balance {getSymbol(_from, tokenAddress)}: {balance}')
+    print(f'Balance {getSymbol(_from, token)}: {balance}')
     return balance
 
 def approve(_from, amount_gwei, tokenTo):
-    token = Contract.from_explorer(tokenTo)
-    token.approve(GeneralSwap[-1].address, f'{amount_gwei} gwei', {
+    tokenTo.approve(GeneralSwap[-1].address, f'{amount_gwei} gwei', {
         'from': _from,
         'priority_fee': '10 wei'
     })

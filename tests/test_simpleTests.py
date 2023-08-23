@@ -1,7 +1,9 @@
 import pytest
 from brownie import accounts, network
 from scripts.simpleSwap import (
-    deploySimpleSwap,
+    getSymbol,
+    getToken,
+    deployGeneralSwap,
     wrapETH,
     balanceOf,
     approve,
@@ -17,15 +19,16 @@ def user():
     
 @pytest.fixture
 def tokens():
-    tokenTo = "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
-    tokenFrom = "0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36"
+    tokenTo = getToken("0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6")
+    tokenFrom = getToken("0x9D233A907E065855D2A9c7d4B552ea27fB2E5a36")
     return tokenTo, tokenFrom
 
 @pytest.fixture
-def simpleSwap(user, tokens):
-    return deploySimpleSwap(user, tokens[0], tokens[1])
+def generalSwap(user, tokens):
+    print(f'Swap {getSymbol(user, tokens[0])} for {getSymbol(user, tokens[1])}')
+    return deployGeneralSwap(user, tokens[0].address, tokens[1].address)
 
-def test_swap(user, simpleSwap, tokens, amount=10):
+def test_swap(user, generalSwap, tokens, amount=10):
     tokenTo, tokenFrom = tokens
     # connect to WETH and wrap some eth
     wrapETH(user, amount+1)
