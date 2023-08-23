@@ -1,6 +1,6 @@
 import pytest
 from brownie import accounts, network
-from scripts.simpleSwap import (
+from scripts.generalSwap import (
     getSymbol,
     getToken,
     deployGeneralSwap,
