@@ -1,14 +1,11 @@
 import pytest
 from conftest import *
+from scripts.generalSwap import deployGeneralSwap, swapTokens
 from scripts.helpful import (
     getSymbol,
     wrapETH,
     balanceOf,
     approve
-)
-from scripts.generalSwap import (
-    deployGeneralSwap,
-    swapTokens
 )
 
 @pytest.fixture(scope='session')
